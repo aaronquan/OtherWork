@@ -1,15 +1,21 @@
 var engine;
 var sW = 500;
 var sH = 500;
+
+var dark = [130,126,111];
+var light = [244,229,204];
+
 var bW = 50;
 var bH = 50;
-
 var s = 8;
 var tW = (sW-bW*2)/s;
 var tH = (sH-bH*2)/s;
 
+var selected = null;
+
 function setup(){
 	createCanvas(500, 500);
+	noStroke();
 	engine = new Engine();
 	engine.setup();
 	engine.printBoard();
@@ -18,23 +24,40 @@ function setup(){
 function draw(){
 	background(100);
 	fill(250,230,255);
-	var c = true;
+	
+	drawBoard(true);
+	if(selected != null){
+		stroke(0);
+		noFill();
+		rect(selected.x*tW+bW, sH-(selected.y+1)*tH-bH, tW, tH);
+		strokeWeight(4);
+		noStroke();
+	}
+}
+
+function drawBoard(side){
+	var c = side;
 	for(var i = 0; i < s; i++){
 		for(var j = 0; j < s; j++){
-			console.log(c);
 			if(c){
-				fill(255,255,80);
+				fill(light);
 			}else{
-				fill(80,255,255)
+				fill(dark);
 			}
-			rect(i*tW+bW, j*bH+tH, tW, tH);
+			rect(i*tW+bW, j*tH+bH, tW, tH);
 			c = !c;
 		}
+		c = !c;
 	}
-	rect(bW, bH, sW-bW*2, sH-bH*2);
 }
 
 function mousePressed(){
-	console.log('click');
-	console.log(mouseX, mouseY);
+	var x = floor((mouseX-bW)/tW);
+	var y = s - ceil((mouseY-bH)/tH);
+	if((x >= 0 && x < s) && (y >= 0 && y < s)){
+		selected = createVector(x, y);
+	}else{
+		selected = null;
+	}
+	//console.log(selected);
 }

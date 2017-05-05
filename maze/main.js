@@ -9,7 +9,7 @@ function setup(){
 	createCanvas(gs*(w+2),gs*(h+2));
 	maze = new Maze(w,h, gs);
 	maze.generate();
-	maze.cut(80);
+	maze.cut((w*h*20)/100);
 	ai = new SLTai(maze);
 	ai2 = new MDai(maze);
 }
