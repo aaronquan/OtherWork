@@ -10,11 +10,16 @@ function Engine(){
 	this.rows = 8;
 	this.cols = 8;
 	
-	this.board = [];
+	this.board = []; // [y][x] representation
 	this.wTurn = true;
 	this.wPOV = true; //board pov
 	
-	this.possibleMoves = function(){
+	this.selectedMoves = [];
+	this.selectedSquare = null;
+	
+	this.possibleMoves = function(x,y){
+		var p = new Piece(this.getPiece(x,y));
+		p.getColour();
 		
 	}
 	this.getPiece = function(x,y){
@@ -40,45 +45,98 @@ function Engine(){
 	}
 	
 	this.setup = function(){
-		for(var i = 0; i < this.rows; i++){
+		for(var j = 0; j < this.cols; j++){
 			this.board.push([]);
 		}
-		for(var i = 0; i < this.rows; i++){
-			for(var j = 0; j < this.cols; j++){
-				if(i == 0){
-					if(j == 0 || j == 7) this.board[i][j] = 4;
-					else if(j == 1 || j == 6) this.board[i][j] = 3;
-					else if(j == 2 || j == 5) this.board[i][j] = 2;
-					else if(j == 3) this.board[i][j] = 5;
-					else if(j == 4) this.board[i][j] = 6;
-				}else if(i == 1){
-					this.board[i][j] = 1;
-				}else if(i == 6){
-					this.board[i][j] = 7; 
+		for(var j = 0; j < this.cols; j++){
+			for(var i = 0; i < this.rows; i++){
+				if(j == 0){
+					if(i == 0 || i == 7) this.board[j][i] = 4;
+					else if(i == 1 || i == 6) this.board[j][i] = 3;
+					else if(i == 2 || i == 5) this.board[j][i] = 2;
+					else if(i == 3) this.board[j][i] = 5;
+					else if(i == 4) this.board[j][i] = 6;
+				}else if(j == 1){
+					this.board[j][i] = 1;
+				}else if(j == 6){
+					this.board[j][i] = 7; 
 				}
-				else if(i == 7){
-					if(j == 0 || j == 7) this.board[i][j] = 10;
-					else if(j == 1 || j == 6) this.board[i][j] = 9;
-					else if(j == 2 || j == 5) this.board[i][j] = 8;
-					else if(j == 3) this.board[i][j] = 11;
-					else if(j == 4) this.board[i][j] = 12;
+				else if(j == 7){
+					if(i == 0 || i == 7) this.board[j][i] = 10;
+					else if(i == 1 || i == 6) this.board[j][i] = 9;
+					else if(i == 2 || i == 5) this.board[j][i] = 8;
+					else if(i == 3) this.board[j][i] = 11;
+					else if(i == 4) this.board[j][i] = 12;
 				}else{
-					this.board[i][j] = 0;
+					this.board[j][i] = 0;
 				}
 			}
 		}
 	}
 	this.printBoard = function(){
-		for(var i = this.rows-1; i >= 0; i--){
+		for(var j = this.rows-1; j >= 0; j--){
 			var str = '';
-			for(var j = this.cols-1; j >= 0; j--){
-				str += this.board[i][j].toString()+' ';
+			for(var i = 0; i < this.cols; i++){
+				str += this.board[j][i].toString()+' ';
 			}
 			console.log(str);
 		}
 	}	
 }
 
-function Piece(){
+function Piece(id){
+	this.id = id; // 1 to 12
 	
+	this.moves = [];
+	
+	this.getColour = function(){
+		if(id >= 6){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	this.type = function(){
+		var p = (this.id-1)%6;
+	}
+}
+
+function Knight(){
+	this.moves = function(x,y){
+		var kn = [createVector(-2, -1),createVector(-2, 1),createVector(2, 1),createVector(2, -1),
+				  createVector(1, -2),createVector(1, 2),createVector(-1, 2),createVector(-1, -2)]
+		var m = [];
+		for(var i = 0; i < kn.length; i++){
+			if(kn[i].x+x < 8 && kn[i].y+y < 8 && kn[i].x+x >= 0 && kn[i].y+y >= 0){
+				m.push(createVector(kn[i].x+x,kn[i].y+y));
+			}	
+		}
+		return m;
+	}
+}
+
+function Straight(){
+	this.moves = function(x,y){
+		var m = [];
+		for(var i = 1; i < 8; i++){
+			if(x+i < 8) m.push(createVector(x+i, y));
+			if(y-i >= 0) m.push(createVector(x, y-i));
+			if(x-i >= 0) m.push(createVector(x-i, y));
+			if(y+i < 8) m.push(createVector(x, y+i));
+		}
+		return m;
+	}
+}
+
+function Diagonal(){
+	this.moves = function(x,y){
+		var m = [];
+		for(var i = 1; i < 8; i++){
+			if(x+i < 8 && y+i < 8) m.push(createVector(x+i, y+i));
+			if(x+i < 8 && y-i >= 0) m.push(createVector(x+i, y-i));
+			if(x-i >= 0 && y+i < 8) m.push(createVector(x-i, y+i));
+			if(x-i >= 0 && y-i >= 0) m.push(createVector(x-i, y-i));
+		}
+		return m;
+	}
 }

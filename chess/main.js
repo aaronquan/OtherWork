@@ -11,7 +11,7 @@ var s = 8;
 var tW = (sW-bW*2)/s;
 var tH = (sH-bH*2)/s;
 
-var selected = null;
+//var selected = null;
 
 function setup(){
 	createCanvas(500, 500);
@@ -25,13 +25,22 @@ function draw(){
 	background(100);
 	fill(250,230,255);
 	
-	drawBoard(true);
+	drawBoard(engine.wPOV);
+	var selected = engine.selectedSquare;
 	if(selected != null){
-		stroke(0);
-		noFill();
-		rect(selected.x*tW+bW, sH-(selected.y+1)*tH-bH, tW, tH);
-		strokeWeight(4);
-		noStroke();
+		highlightTile(selected.x, selected.y, [0, 0, 0]);
+		var straights = new Straight().moves(selected.x, selected.y);
+		for(var i = 0; i < straights.length; i++){
+			highlightTile(straights[i].x, straights[i].y, [0,255,0]);
+		}
+		var diagonals = new Diagonal().moves(selected.x, selected.y);
+		for(var i = 0; i < diagonals.length; i++){
+			highlightTile(diagonals[i].x, diagonals[i].y, [255,0,0]);
+		}
+		var knights = new Knight().moves(selected.x, selected.y);
+		for(var i = 0; i < knights.length; i++){
+			highlightTile(knights[i].x, knights[i].y, [0,0,255]);
+		}
 	}
 }
 
@@ -55,9 +64,25 @@ function mousePressed(){
 	var x = floor((mouseX-bW)/tW);
 	var y = s - ceil((mouseY-bH)/tH);
 	if((x >= 0 && x < s) && (y >= 0 && y < s)){
-		selected = createVector(x, y);
+		engine.selectedSquare = createVector(x,y);
 	}else{
-		selected = null;
+		engine.selectedSquare = null;
 	}
 	//console.log(selected);
+}
+
+function keyPressed(){
+	if(keyCode == 32){
+		engine.wPOV = !engine.wPOV;
+	}
+}
+
+function highlightTile(x,y,c){
+	var sw = 4;
+	strokeWeight(sw);
+	stroke(c[0], c[1], c[2]);
+	noFill();
+	rect(x*tW+bW+sw/2, sH-(y+1)*tH-bH+sw/2, tW-sw, tH-sw);
+	strokeWeight();
+	noStroke();
 }
