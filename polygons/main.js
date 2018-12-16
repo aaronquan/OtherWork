@@ -7,6 +7,8 @@ function setup(){
 	//background(50);
 	createCanvas(w,h);
 	poly = new Polygon();
+
+	testBST();
 	//poly.appendPoint(createVector(random(w), random(h)));
 	//poly.appendPoint(createVector(random(w), random(h)));
 	//poly.appendPoint(createVector(random(w), random(h)));

@@ -1,3 +1,4 @@
+//an array of connected line segments that do not intersect
 function Polygon(){
 	this.points = []; //contains vectors
 	
@@ -92,6 +93,17 @@ function Polygon(){
 		return numCrosses % 2 == 0 ? false : true; 
 	}
 	
+}
+
+function LineSegment(p1, p2){
+	this.point1 = p1;
+	this.point2 = p2;
+	
+	
+	//check intersection with another line segment
+	this.intersection = function(ls){
+		
+	}
 }
 
 //l1, l2 are 2 element arrays of vectors
